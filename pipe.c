@@ -5,6 +5,7 @@
 #define MAX 4000
 #define STRING 1000
 
+// char ERROR[] = "Error. Invalid math expression.";
 // Stack_Char
 typedef struct stack_char {
 	char elements[MAX];
@@ -124,6 +125,23 @@ int ktToanTu(char ch) {
 	return 0;
 }
 
+int ktBieuThuc(char bt[]) {
+	int open = 0;
+	int close = 0;
+	for (int i = 0; i < strlen(bt); i++) {
+		if (ktToanTu(bt[i]) && ktToanTu(bt[i + 1]))           ///kiem tra du lieu dau vao`
+			return 0;
+		if ((bt[i] >= 97 && bt[i] <= 122) || (bt[i] >= 65 && bt[i] <= 90))
+			return 0;
+    if ( !ktToanTu(bt[i]) && !ktToanHang(bt[i]) && bt[i] != ')'&& bt[i] != '(') 
+      return 0;
+		if (bt[i] == ')') open += 1;
+		if (bt[i] == '(') close += 1;
+	}
+	if (open != close) return 0;
+	return 1;
+}
+
 
 /*********************ham` chuyen tu 1 bieu thuc trung to--->hau to *************/
 
@@ -133,14 +151,14 @@ int conver(char infix[], char postfix[]) {
 	createStack(&myStack);
 	int count = 0;
 
-	for (int i = 0; i < strlen(infix); i++) {
-		if (ktToanTu(infix[i]) && ktToanTu(infix[i + 1]))           ///kiem tra du lieu dau vao`
-			return 0;
-		if ((infix[i] >= 97 && infix[i] <= 122) || (infix[i] >= 65 && infix[i] <= 90))
-			return 0;
-    // if ( !ktToanTu(infix[i])|| !ktToanHang(infix[i])) 
-    //   return 0;
-	}
+	// for (int i = 0; i < strlen(infix); i++) {
+	// 	if (ktToanTu(infix[i]) && ktToanTu(infix[i + 1]))           ///kiem tra du lieu dau vao`
+	// 		return 0;
+	// 	if ((infix[i] >= 97 && infix[i] <= 122) || (infix[i] >= 65 && infix[i] <= 90))
+	// 		return 0;
+  //   // if ( !ktToanTu(infix[i])|| !ktToanHang(infix[i])) 
+  //   //   return 0;
+	// }
 
 	for (int i = 0; i < strlen(infix); i++) {
 		char ch = infix[i];
@@ -273,6 +291,23 @@ void reader(FILE* stream)
 
 int main()
 {
+
+	char inputString[SIZE];
+	printf("---------- Start -----------\n");
+
+	while(1) {
+		printf("Enter expression : ");
+		fflush(stdin);
+		gets(inputString);
+		if (ktBieuThuc(inputString)) {
+			break;
+		}
+		printf("Invalid expression. Please try again\n");
+	}
+  
+
+
+	////////
   int fds_1[2]; //pipe 1 (result)
   int fds_2[2]; //pipe 2 (inputString)
 
@@ -305,6 +340,7 @@ int main()
     printf("%s\n", "Do calculating ...");
 
     sprintf(tmpStr, "%3.3f", calculate(strReceive));     //tmpStr = calculate(strReceive)
+		if (strcmp(result) )
     strcat(result, tmpStr);                          //result += tmpStr
 
     printf("%s\n", "Done calculate");
@@ -326,10 +362,10 @@ int main()
 
     // The string (inputString) write to child process for calculate.
     printf("\n%s\n", "---------- Start A -----------");
-    char inputString[SIZE];
-    printf("Enter expression : ");
-  	fflush(stdin);
-  	gets(inputString);
+    // char inputString[SIZE];
+    // printf("Enter expression : ");
+  	// fflush(stdin);
+  	// gets(inputString);
     printf("Writing expression str = %s to child process for calculate.\n", inputString);
     fprintf(stream, "%s\n", inputString);
     fflush(stream);
